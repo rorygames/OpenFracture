@@ -35,6 +35,8 @@ public class FractureOptions
     [Tooltip("Offset to apply to texture coordinates")]
     public Vector2 textureOffset;
 
+    public float forceOnFracture = 0f;
+
     public FractureOptions()
     {
         this.fragmentCount = 10;
@@ -46,5 +48,6 @@ public class FractureOptions
         this.insideMaterial = null;
         this.textureScale = Vector2.one;
         this.textureOffset = Vector2.zero;
+        this.forceOnFracture = 0f;
     }
 }

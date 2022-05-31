@@ -26,6 +26,7 @@ public class FractureOptionsPropertyDrawer : PropertyDrawer
             EditorGUILayout.PropertyField(property.FindPropertyRelative("insideMaterial"));
             EditorGUILayout.PropertyField(property.FindPropertyRelative("textureScale"));
             EditorGUILayout.PropertyField(property.FindPropertyRelative("textureOffset"));
+            EditorGUILayout.PropertyField(property.FindPropertyRelative("forceOnFracture"));
         }
 
         EditorGUILayout.EndFoldoutHeaderGroup();

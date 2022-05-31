@@ -21,7 +21,7 @@ public static class Fragmenter
     /// <param name="saveToDisk">If true, the generated fragment meshes will be saved to disk so they can be re-used in prefabs.</param>
     /// <param name="saveFolderPath">The save location for the fragments.</param>
     /// <returns></returns>
-    public static void Fracture(GameObject sourceObject,
+    public static List<GameObject> Fracture(GameObject sourceObject,
                                 FractureOptions options,
                                 GameObject fragmentTemplate,
                                 Transform parent,
@@ -63,17 +63,19 @@ public static class Fragmenter
         }
 
         int i = 0;
+        List<GameObject> objects = new List<GameObject>();
         foreach(FragmentData meshData in fragments)
         {
-            CreateFragment(meshData, 
+            objects.AddRange(CreateFragment(meshData,
                            sourceObject,
-                           fragmentTemplate, 
+                           fragmentTemplate,
                            parent,
                            saveToDisk,
                            saveFolderPath,
                            options.detectFloatingFragments,
-                           ref i);
+                           ref i));
         }
+        return objects;
     }
 
     /// <summary>
@@ -89,7 +91,7 @@ public static class Fragmenter
                                             FractureOptions options,
                                             GameObject fragmentTemplate,
                                             Transform parent,
-                                            Action onCompletion)
+                                            Action<List<GameObject>> onCompletion)
     {
         // Define our source mesh data for the fracturing
         FragmentData sourceMesh = new FragmentData(sourceObject.GetComponent<MeshFilter>().sharedMesh);
@@ -129,19 +131,20 @@ public static class Fragmenter
         }
 
         int i = 0;
-        foreach(FragmentData meshData in fragments)
+        List<GameObject> objects = new List<GameObject>();
+        foreach (FragmentData meshData in fragments)
         {
-            CreateFragment(meshData, 
+            objects.AddRange(CreateFragment(meshData, 
                            sourceObject,
                            fragmentTemplate, 
                            parent,
                            false,
                            "",
                            options.detectFloatingFragments,
-                           ref i);
+                           ref i));
         }
 
-        onCompletion?.Invoke();
+        onCompletion?.Invoke(objects);
     }
 
     /// <summary>
@@ -204,7 +207,7 @@ public static class Fragmenter
     /// <param name="fragmentTemplate">The template GameObject that each fragment will clone</param>
     /// <param name="parent">The parent transform for the fragment objects</param>
     /// <param name="i">Fragment counter</param>
-    private static void CreateFragment(FragmentData fragmentMeshData,
+    private static List<GameObject> CreateFragment(FragmentData fragmentMeshData,
                                        GameObject sourceObject,
                                        GameObject fragmentTemplate,
                                        Transform parent,
@@ -216,7 +219,7 @@ public static class Fragmenter
         // If there is no mesh data, don't create an object
         if (fragmentMeshData.Triangles.Length == 0)
         {
-            return;
+            return null;
         }
 
         Mesh[] meshes;
@@ -236,6 +239,8 @@ public static class Fragmenter
 
         var parentSize = sourceObject.GetComponent<MeshFilter>().sharedMesh.bounds.size;
         var parentMass = sourceObject.GetComponent<Rigidbody>().mass;
+
+        List<GameObject> fragments = new List<GameObject>();
 
         for(int k = 0; k < meshes.Length; k++)
         {
@@ -275,7 +280,10 @@ public static class Fragmenter
             }
             #endif
 
+            fragments.Add(fragment);
+
             i++;
         }
+        return fragments;
     }
 }

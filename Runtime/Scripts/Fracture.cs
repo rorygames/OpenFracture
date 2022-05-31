@@ -111,7 +111,7 @@ public class Fracture : MonoBehaviour
     /// Compute the fracture and create the fragments
     /// </summary>
     /// <returns></returns>
-    private void ComputeFracture()
+    public void ComputeFracture()
     {
         var mesh = this.GetComponent<MeshFilter>().sharedMesh;
 
@@ -139,7 +139,7 @@ public class Fracture : MonoBehaviour
                     this.fractureOptions,
                     fragmentTemplate,
                     this.fragmentRoot.transform,
-                    () => 
+                    (frags) => 
                     {
                         // Done with template, destroy it
                         GameObject.Destroy(fragmentTemplate);
@@ -154,6 +154,15 @@ public class Fracture : MonoBehaviour
                             if (callbackOptions.onCompleted != null)
                             {
                                 callbackOptions.onCompleted.Invoke();
+                            }
+                        }
+                        if(this.fractureOptions.forceOnFracture > 0)
+                        {
+                            foreach (var item in frags)
+                            {
+                                Rigidbody r = item.GetComponent<Rigidbody>();
+                                r.useGravity = true;
+                                r.AddExplosionForce(this.fractureOptions.forceOnFracture, this.transform.position, 0.5f);
                             }
                         }
                     }
